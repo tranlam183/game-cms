@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { updateSnackbar } from "./actions";
+import { Auth, SignatureMsg, updateSnackbar } from "./actions";
 import { AlertColor } from "@mui/material";
 
 export type Snackbar = {
@@ -14,6 +14,8 @@ export interface AppConfigs {
 export interface AppState {
   snackbar: Snackbar | null;
   configs: AppConfigs;
+  signatureMsg?: string;
+
 }
 
 const initialState: AppState = {
@@ -28,9 +30,16 @@ const appSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(updateSnackbar, (state, action) => {
-      state.snackbar = action.payload;
-    });
+    builder
+      .addCase(updateSnackbar, (state, action) => {
+        state.snackbar = action.payload;
+      })
+      .addCase(SignatureMsg.fulfilled, (state, action) => {
+        state.signatureMsg = action.payload;
+      })
+      .addCase(Auth.fulfilled, (state, action) => {
+        state.signatureMsg = action.payload;
+      });
   },
 });
 

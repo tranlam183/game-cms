@@ -1,10 +1,5 @@
 const typography = {
-  fontFamily: [
-    '"Open Sans"',
-    "-apple-system",
-    "BlinkMacSystemFont",
-    "sans-serif",
-  ].join(","),
+  fontFamily: "Coda",
   h1: {
     lineHeight: 1.5,
   },

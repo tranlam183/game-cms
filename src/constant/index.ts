@@ -1,3 +1,5 @@
+import { Cluster } from "cluster";
+
 export const API_URL = process.env.API_URL as string;
 export const SENTRY_DSN = process.env.SENTRY_DSN as string;
 export const GOOGLE_ANALYTICS_ID = process.env.GOOGLE_ANALYTICS_ID as string;
@@ -24,3 +26,6 @@ export const VIETNAMESE_LANGUAGE = "vi";
 export const DEFAULT_LANGUAGE = ENGLISH_LANGUAGE;
 export const DEFAULT_NAMESPACE = "common";
 export const NS_HOME = "home";
+export const SOLANA_NETWORK = process.env.SOLANA_NETWORK as unknown as Cluster;
+//export const SOLANA_ENDPOINT = clusterApiUrl(SOLANA_NETWORK);
+export const SOLANA_ENDPOINT = "http://103.23.44.47:8899";

@@ -8,7 +8,7 @@ const colors = {
       white: "#FFFFFF",
     },
     primary: {
-      main: "#1976D2",
+      main: "#1976d2",
       light: "#42A5F5",
       dark: "#1565C0",
       contrastText: "#FFFFFF",

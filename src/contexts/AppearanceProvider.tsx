@@ -30,6 +30,7 @@ const AppearanceProvider = (props: AppearanceProviderProps) => {
   const { children } = props;
 
   const [mode, setMode] = useState<AppearanceType>(AppearanceType.Light);
+  console.log("🚀 ~ file: AppearanceProvider.tsx ~ line 33 ~ AppearanceProvider ~ mode", mode)
 
   const onChangeThemeStorage = (newMode: AppearanceType) => {
     setMode(newMode);
@@ -59,56 +60,56 @@ const AppearanceProvider = (props: AppearanceProviderProps) => {
     [mode],
   );
 
-  const onMediaQuery = useCallback((event?) => {
-    const systemTheme = getThemeSystem(event);
-    onChangeThemeStorage(systemTheme);
-  }, []);
+  // const onMediaQuery = useCallback((event?) => {
+  //   const systemTheme = getThemeSystem(event);
+  //   onChangeThemeStorage(systemTheme);
+  // }, []);
 
-  const mediaListener = useRef(onMediaQuery);
-  mediaListener.current = onMediaQuery;
+  // const mediaListener = useRef(onMediaQuery);
+  // mediaListener.current = onMediaQuery;
 
-  useEffect(() => {
-    const defaultMode = getTheme(THEME_KEY, AppearanceType.Light);
-    onChangeThemeStorage(defaultMode);
+  // useEffect(() => {
+  //   const defaultMode = getTheme(THEME_KEY, AppearanceType.Light);
+  //   onChangeThemeStorage(defaultMode);
 
-    const handlerMediaListener = (...args) => mediaListener.current(...args);
+  //   const handlerMediaListener = (...args) => mediaListener.current(...args);
 
-    // Always listen to System preference
-    const media = window.matchMedia(DARK_THEME_MEDIA_SYSTEM);
-    if (!media) return;
+  //   // Always listen to System preference
+  //   const media = window.matchMedia(DARK_THEME_MEDIA_SYSTEM);
+  //   if (!media) return;
 
-    if (media?.addEventListener) {
-      media?.addEventListener("change", handlerMediaListener);
-      return () => media?.removeEventListener("change", handlerMediaListener);
-    } else {
-      media.addListener(handlerMediaListener);
-      return () => media.removeListener(handlerMediaListener);
-    }
-  }, []);
+  //   if (media?.addEventListener) {
+  //     media?.addEventListener("change", handlerMediaListener);
+  //     return () => media?.removeEventListener("change", handlerMediaListener);
+  //   } else {
+  //     media.addListener(handlerMediaListener);
+  //     return () => media.removeListener(handlerMediaListener);
+  //   }
+  // }, []);
 
-  // localStorage event handling
-  useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== THEME_KEY) {
-        return;
-      }
-      // If default theme set, use it if localStorage === null (happens on local storage manual deletion)
-      const systemTheme: AppearanceType = getThemeSystem();
-      const AppearanceTypeValue = parseJSON(
-        event.newValue as string,
-        systemTheme,
-      ) as AppearanceType;
+  // // localStorage event handling
+  // useEffect(() => {
+  //   const handleStorage = (event: StorageEvent) => {
+  //     if (event.key !== THEME_KEY) {
+  //       return;
+  //     }
+  //     // If default theme set, use it if localStorage === null (happens on local storage manual deletion)
+  //     const systemTheme: AppearanceType = getThemeSystem();
+  //     const AppearanceTypeValue = parseJSON(
+  //       event.newValue as string,
+  //       systemTheme,
+  //     ) as AppearanceType;
 
-      const theme = Object.values(AppearanceType).includes(AppearanceTypeValue)
-        ? AppearanceTypeValue
-        : systemTheme;
+  //     const theme = Object.values(AppearanceType).includes(AppearanceTypeValue)
+  //       ? AppearanceTypeValue
+  //       : systemTheme;
 
-      onChangeThemeStorage(theme);
-    };
+  //     onChangeThemeStorage(theme);
+  //   };
 
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  //   window.addEventListener("storage", handleStorage);
+  //   return () => window.removeEventListener("storage", handleStorage);
+  // }, []);
 
   return (
     <AppearanceContext.Provider value={appearanceTypeMode}>
