@@ -1,28 +1,28 @@
+import React, { memo, useEffect } from "react";
+import WalletConnector from "./WalletConnector";
+import { useAuth } from "store/app/hooks";
+import { clearToken, setToken } from "api/client";
+import { useAppSelector } from "store/hooks";
+import { CircularProgress } from "@mui/material";
 
-import {
-  WalletModalProvider, WalletMultiButton,
-  WalletModalProps
-} from "@solana/wallet-adapter-react-ui";
+const WalletButton = () => {
+  const { token } = useAuth();
+  const appReady = useAppSelector((state) => state.app.appReady);
 
-import dynamic from 'next/dynamic';
+  useEffect(() => {
+    if (token) {
+      setToken(token);
+    } else {
+      clearToken();
+    }
+  }, [token]);
 
-const WalletWrapper = dynamic(() => import('./walletbutton.style'), {
-  ssr: false,
-})
-
-
-// Default styles that can be overridden by your app
-require("@solana/wallet-adapter-react-ui/styles.css");
-interface UIProps {
-  drakMode?: boolean;
-}
-export const WalletButton = (props: UIProps) => {
-  return (
-    <WalletWrapper className={props.drakMode ? "dark" : ""} id="walletButton" style={{zIndex:1210}}>
-      <WalletModalProvider >
-        <WalletMultiButton style={{border: "1px solid white"}}/>
-      </WalletModalProvider>
-    </WalletWrapper>
-  );
+  if (appReady) {
+    return <WalletConnector />;
+  }
+  return <CircularProgress size={24} />;
 };
 
+export default memo(WalletButton);
+
+export const HEIGHT_HEADER = 80;

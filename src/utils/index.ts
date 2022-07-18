@@ -2,6 +2,7 @@ import { DARK_THEME_MEDIA_SYSTEM, DEFAULT_LANGUAGE } from "constant";
 import { AppearanceType } from "constant/enum";
 import { LanguageType } from "constant/types";
 import { clientStorage } from "utils/storage";
+import base58 from "bs58";
 
 export const getTheme = (
   key: string,
@@ -46,4 +47,24 @@ export const parseJSON = (data: string, defaultData: unknown): unknown => {
     console.error(error);
     return defaultData;
   }
+};
+
+export const getSignMessage = async (text: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sol = (window as any)?.solana;
+  if (!sol) return null;
+  try {
+    const encodedMessage = new TextEncoder().encode(text);
+    const signedMessage = await sol.signMessage(encodedMessage, "utf8");
+    return base58.encode(signedMessage.signature) as string;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+
+export const shortText = (text?: string, fallback?: string) => {
+  if (!text) return fallback ?? "--";
+  return text.slice(0, 6) + "..." + text.slice(-4);
 };

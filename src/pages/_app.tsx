@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import App, { AppContext, AppProps } from "next/app";
@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import { GOOGLE_ANALYTICS_ID } from "constant";
 import Script from "next/script";
 import SolanaProvider from "contexts/SolanaProvider";
-
+import { AuthData, updateAuth, AUTH_WALLET_COOKIE, fieldChange } from "store/app";
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -20,6 +20,7 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any;
+  authWalletCookies: AuthData | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -29,8 +30,17 @@ function MyApp(props: MyAppProps) {
     emotionCache = clientSideEmotionCache,
     pageProps,
     err,
+    authWalletCookies,
+
   } = props;
 
+  useEffect(() => {
+    if (authWalletCookies) {
+      store.dispatch(updateAuth(authWalletCookies));
+    }
+    store.dispatch(fieldChange({ key: "appReady", value: true }));
+  }, [authWalletCookies]);
+  
   return (
     // <CacheProvider value={emotionCache}>
     <AppearanceProvider>
@@ -73,7 +83,14 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   const appProps = await App.getInitialProps(appContext);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const authWalletCookies = (appContext.ctx.req as any)?.cookies[
+    AUTH_WALLET_COOKIE
+  ] as string;
+
   return {
     ...appProps,
+    authWalletCookies: authWalletCookies ? JSON.parse(authWalletCookies) : null,
   };
 };
+

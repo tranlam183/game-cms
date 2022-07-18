@@ -4,14 +4,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 interface UIProps {
-    value: string;
     title: string;
     type: string;
     onChangeValue?: (value: string) => void;
 }
 
 const TextInputLayout = (props: UIProps) => {
-    const { value, title, type } = props;
+    const { title, type } = props;
     const [values, setValues] = React.useState({
         values: '',
         showPassword: false,
@@ -37,8 +36,8 @@ const TextInputLayout = (props: UIProps) => {
 
     }, [values])
     return (
-        <Stack width='100%'>
-            <FormControl sx={{ m: 1 }} variant="outlined">
+        <Stack width='100%' my={1}>
+            <FormControl sx={{ }} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-password">{title}</InputLabel>
                 {/* <BootstrapInput
                     id="outlined-adornment-password"
@@ -61,7 +60,7 @@ const TextInputLayout = (props: UIProps) => {
 
                 <OutlinedInput
                     id="outlined-adornment-password"
-                    type={values.showPassword ? 'text' : 'password'}
+                    type={type ? 'text' : 'password'}
                     value={values.values}
                     onChange={handleChange}
                     endAdornment={type === 'password' ?

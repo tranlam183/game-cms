@@ -5,10 +5,19 @@ import { API_URL } from "constant";
 
 const requestAbortCode = "ECONNABORTED";
 
+export const setToken = async (token: string) => {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
+export const clearToken = async () => {
+  axios.defaults.headers.common["Authorization"] = "";
+};
+
+
 axios.defaults.baseURL = API_URL;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 axios.defaults.timeout = 360000;
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 const RequestClient = class {
   constructor() {
@@ -18,7 +27,6 @@ const RequestClient = class {
   async get(endpoint: string, params = {}) {
     try {
       const response = await axios.get(endpoint, params);
-
       return response;
     } catch (error) {
       this.handleError(error);

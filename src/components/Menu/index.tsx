@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Stack, Box, Link, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
+import React, { ReactNode, useEffect } from 'react';
+import { Stack, Box, Link, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemText, ListItemIcon, SxProps } from '@mui/material';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -8,12 +8,18 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { WalletButton } from 'components/WalletButton';
 import { useWallet } from '@solana/wallet-adapter-react';
+import WalletButton from 'components/WalletButton';
 
 const drawerWidth = 240;
+interface UIProps {
+    children?:ReactNode;
+    styled?:SxProps;
+}
 
-const Menu = () => {
+
+const Menu = (props:UIProps) => {
+    const {children,styled ={flexGrow: 1, pt: 10,px:3}} = props;
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const { publicKey } = useWallet();
@@ -68,40 +74,34 @@ const Menu = () => {
                 <Divider />
                 <List>
                     {MENU_LIST.map((item, index) => (
-                        <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
+                        <Link href={item.url}>
+                            <ListItem key={index} disablePadding sx={{ display: 'block' }} >
+                                <ListItemButton
                                     sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
+                                        minHeight: 48,
+                                        justifyContent: open ? 'initial' : 'center',
+                                        px: 2.5,
                                     }}
                                 >
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={item.content} sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
-                        </ListItem>
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: 0,
+                                            mr: open ? 3 : 'auto',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.content} sx={{ opacity: open ? 1 : 0 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        </Link>
                     ))}
                 </List>
                 <Divider />
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <DrawerHeader />
-                <Typography paragraph>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-                </Typography>
-                <Typography paragraph>
-                    Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-                    eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-                </Typography>
+            <Box component="main" sx={styled}>
+              {children}
             </Box>
         </Box>
     )
@@ -183,8 +183,8 @@ const MENU_LIST = [
         url: "/",
     },
     {
-        content: "Events",
-        url: "/events",
+        content: "RaceTrack",
+        url: "/racetrack",
     },
     {
         content: "Tournaments",

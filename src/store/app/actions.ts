@@ -1,22 +1,33 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client, Endpoint } from "api";
-import { Snackbar } from "./reducer";
+import { AuthData, Snackbar } from "./reducer";
 
 export const updateSnackbar = createAction<Snackbar | null>(
   "application/updateSnackbar",
 );
+
+export const updateAuth = createAction<AuthData>("app/updateAuth");
+
 export const SignatureMsg = createAsyncThunk(
-  "racetrack/SignatureMsg",
+  "application/SignatureMsg",
   async (address: string) => {
-    const response = await client.post(Endpoint.AUTH,address)
+    const response = await client.post(Endpoint.AUTH, address);
     return response?.data;
   },
 );
 
 export const Auth = createAsyncThunk(
-  "racetrack/Auth",
-  async (BodyAuth: string) => {
-    const response = await client.post(Endpoint.AUTH,BodyAuth)
-    return response?.data;
+  "application/Auth",
+  async (address: string) => {
+    const response = await client.post(
+      `${Endpoint.AUTH}/signature-message`,
+      address,
+    );
+    try {
+        if(response){
+
+        }
+      return response?.data;
+    } catch (err) {}
   },
 );

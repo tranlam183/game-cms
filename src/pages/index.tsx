@@ -16,7 +16,9 @@ const Home = () => {
       <Text textAlign="center" variant="h3" color="error.light">
         NextJS App
       </Text> */}
-      <Menu />
+      <Menu >
+        
+      </Menu>
       {/* <LoginScreen/> */}
     </Stack>
   );

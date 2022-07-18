@@ -14,3 +14,9 @@ export interface Option {
   value: string | number;
   icon?: React.ReactNode;
 }
+
+
+export type PhantomError = {
+  code: number;
+  message: string;
+};
