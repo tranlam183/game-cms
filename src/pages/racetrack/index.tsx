@@ -1,51 +1,58 @@
 import React, { useEffect } from 'react';
-import { Stack, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, IconButton, InputBase, Button, SelectChangeEvent, FormControl, Select, OutlinedInput, MenuItem, Checkbox, ListItemText, InputLabel } from '@mui/material';
+import { Stack, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, IconButton, InputBase, Button, SelectChangeEvent, FormControl, Select, OutlinedInput, MenuItem, Checkbox, ListItemText, InputLabel, Box } from '@mui/material';
 import Menu from 'components/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TemporaryDrawer from 'components/Drawer';
 import { TextInputLayout } from 'components';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { BodyUrlRacetrack } from 'store/racetrack/reducer';
-import { RacetrackCreate, RacetrackGet } from 'store/racetrack/actions';
+import { BodyUrlRacetrack, DataStatus } from 'store/racetrack/reducer';
+import { getRacetrack, postRacetrack } from 'store/racetrack/actions';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { updateSnackbar } from 'store/app';
 
 
 
 interface Column {
-    id: 'name' | 'image' | 'labs' | 'timeReq';
-    label: string;
-    minWidth?: number;
+    id?: 'name' | 'image' | 'laps' | 'timeReq';
+    label?: string;
+    minWidth?: number | string;
     align?: 'right';
 }
 
 const columns: readonly Column[] = [
-    { id: 'name', label: 'Name', minWidth: 170 },
-    { id: 'image', label: 'Image', minWidth: 100 },
+    { id: 'name', label: 'Name', minWidth: '25%' },
+    { id: 'image', label: 'Image', minWidth: '25%' },
     {
-        id: 'labs',
+        id: 'laps',
         label: 'Laps',
-        minWidth: 170,
+        minWidth: '25%',
         align: 'right',
     },
     {
         id: 'timeReq',
         label: 'Time',
-        minWidth: 170,
+        minWidth: '25%',
         align: 'right',
     },
+    // {
+    //     id: 'timeReq',
+    //     label: 'Time',
+    //     minWidth: '25%',
+    //     align: 'right',
+    // },
 ];
 
 
 const RaceTrack = () => {
     const [page, setPage] = React.useState(0);
-    const {publicKey} = useWallet()
+    const [openModal, setOpenModal] = React.useState(false);
     const [bodyReqValues, setBodyReq] = React.useState<BodyUrlRacetrack>({
         name: '',
         description: '',
         image: '',
         background: '',
-        labs: 0,
+        laps: 0,
         timeReq: 0,
         models: [],
     })
@@ -55,12 +62,46 @@ const RaceTrack = () => {
 
 
     useEffect(() => {
-        dispatch(RacetrackGet(racetracks.params))
+        dispatch(getRacetrack(racetracks.params))
+    }, [])
 
-    }, [publicKey])
-    const onSubmit = () => {
-        dispatch(RacetrackCreate(bodyReqValues))
+    // useEffect(() => {
+    //     if (racetracks.dataStatus === DataStatus.Succeeded) {
+    //         setBodyReq({
+    //             name: '',
+    //             description: '',
+    //             image: '',
+    //             background: '',
+    //             laps: 0,
+    //             timeReq: 0,
+    //             models: [],
+    //         })
+    //         setOpenModal(false)
+    //         dispatch(updateSnackbar({ message: "NFT address is copied" }))
+    //         dispatch(getRacetrack(racetracks.params))
+    //     }
+
+    // }, [racetracks.dataStatus]);
+    const onSubmit = async () => {
+        const resp = await dispatch(postRacetrack(bodyReqValues)).unwrap()
+        if (resp?._id) {
+            setBodyReq({
+                name: '',
+                description: '',
+                image: '',
+                background: '',
+                laps: 0,
+                timeReq: 0,
+                models: [],
+            })
+            setOpenModal(false)
+            dispatch(updateSnackbar({ message: "Success!", severity: "success" }))
+        }
+        else {
+            dispatch(updateSnackbar({ message: "Error", severity: "error"  }))
+        }
     }
+
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -100,13 +141,13 @@ const RaceTrack = () => {
                         <FilterListIcon />
                     </IconButton>
                 </Stack>
-                <TemporaryDrawer anchorDirection={'right'} >
+                <TemporaryDrawer anchorDirection={'right'} stateModel={openModal}>
                     <Stack p={2}  >
                         <TextInputLayout title='Name' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, name: value })} />
                         <TextInputLayout title='Description' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, description: value })} />
                         <TextInputLayout title='Image' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, image: value })} />
                         <TextInputLayout title='Background' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, background: value })} />
-                        <TextInputLayout title='Labs' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, labs: Number(value) })} />
+                        <TextInputLayout title='Laps' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, laps: Number(value) })} />
                         <TextInputLayout title='TimeReq' type='text' onChangeValue={(value) => setBodyReq({ ...bodyReqValues, timeReq: Number(value) })} />
                         <FormControl sx={{ width: '100%', mt: 1 }}>
                             <InputLabel id="demo-multiple-checkbox-label">Models</InputLabel>
@@ -135,15 +176,15 @@ const RaceTrack = () => {
                 </TemporaryDrawer>
             </Stack>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                <TableContainer sx={{ maxHeight: 440 }}>
+                <TableContainer sx={{}}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
-                            <TableRow>
+                            <TableRow sx={{ width: '100%' }}>
                                 {columns.map((column) => (
                                     <TableCell
                                         key={column.id}
                                         align={column.align}
-                                        style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
+                                        style={{ width: column.minWidth, fontWeight: 'bold', border: '1px solid' }}
                                     >
                                         {column.label}
                                     </TableCell>
@@ -157,14 +198,20 @@ const RaceTrack = () => {
                                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                             {columns.map((column) => {
                                                 const value = row[column?.id ?? ''];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {/* {column.format && typeof value === 'number'
-                                                            ? column.format(value)
-                                                            : value} */}
-                                                        {value}
-                                                    </TableCell>
-                                                );
+                                                if (column.id !== 'image') {
+                                                    return (
+                                                        <TableCell key={column.id} align={column.align}>
+                                                            {value}
+                                                        </TableCell>
+                                                    );
+                                                }
+                                                else {
+                                                    return (
+                                                        <TableCell key={index} >
+                                                            <Box component='img' src={row.image} sx={{ height: '100px', objectFit: 'cover' }} />
+                                                        </TableCell>
+                                                    );
+                                                }
                                             })}
                                         </TableRow>
                                     );

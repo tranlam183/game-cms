@@ -13,6 +13,7 @@ import { GOOGLE_ANALYTICS_ID } from "constant";
 import Script from "next/script";
 import SolanaProvider from "contexts/SolanaProvider";
 import { AuthData, updateAuth, AUTH_WALLET_COOKIE, fieldChange } from "store/app";
+import Snackbar from "components/Snackbar";
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -68,6 +69,7 @@ function MyApp(props: MyAppProps) {
                 `}
           </Script>
           <CssBaseline />
+          <Snackbar/>
           <Component {...pageProps} err={err} />
         </SolanaProvider>
       </Provider>

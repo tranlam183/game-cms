@@ -1,5 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { RacetrackCreate, RacetrackGet } from "./actions";
+import { postRacetrack, getRacetrack } from "./actions";
 
 export interface BodyAuth {
   wallet: string;
@@ -11,7 +11,7 @@ export interface BodyUrlRacetrack {
   image: string;
   background: string;
   timeReq: number;
-  labs: number;
+  laps: number;
   models: string[];
 }
 export interface Param {
@@ -19,20 +19,29 @@ export interface Param {
   pageSize: number;
 }
 
+export enum DataStatus {
+  Idle,
+  Loading,
+  Succeeded,
+  Failed,
+}
 export interface RacetractState {
   racetrackItems: BodyUrlRacetrack[];
   signatureMsg?: string;
   models: string[];
   params?: Param;
+  isFetching?: boolean;
+  dataStatus?: DataStatus;
 }
 
 const initialState: RacetractState = {
-  racetrackItems:[],
+  isFetching: false,
+  racetrackItems: [],
   models: ["Nismo", "Honda", "Bugatti", "McLaren"],
   params: {
-    pageIndex:1,
-    pageSize:10,
-  }
+    pageIndex: 1,
+    pageSize: 10,
+  },
 };
 
 const appSlice = createSlice({
@@ -44,10 +53,16 @@ const appSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(RacetrackGet.fulfilled, (state, action) => {
-      // state.racetrackItems.unshift(action.payload)
-      state.racetrackItems= action.payload
-    });
+    builder
+      .addCase(getRacetrack.fulfilled, (state, action) => {
+        state.racetrackItems = action.payload;
+      })
+      .addCase(postRacetrack.fulfilled, (state, action) => {
+        if (action.payload?._id) {
+          state.racetrackItems.pop()
+          state.racetrackItems.unshift(action.payload);
+        }
+      });
   },
 });
 
